@@ -17,6 +17,10 @@
 - [x] Email Client setup (Legacy)
 - [x] Email Client setup (MailGun API)
 - [x] Service for registration mail sending
-- [ ] Account Model
-- [ ] Acount routes
-- [ ] Account Controller
+- [x] Account Model
+- [x] Acount routes
+- [x] Account Controller
+- [ ] Ledger implementation
+- - [ ] transaction implementation
+- - [ ] Ledger implementation 
+- - [ ] Idempotency implementation

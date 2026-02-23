@@ -20,7 +20,9 @@
 - [x] Account Model
 - [x] Acount routes
 - [x] Account Controller
-- [ ] Ledger implementation
-- - [ ] transaction implementation
-- - [ ] Ledger implementation 
-- - [ ] Idempotency implementation
+- [x] Ledger implementation
+- - [x] transaction implementation
+- - [x] Ledger implementation 
+- - [x] Idempotency implementation
+- [] Transaction API
+- [] Balance API

@@ -25,6 +25,14 @@ async function sendRegistrationEmail(userEmail,name){
     sendEmail(userEmail,subject,text,html);
 }
 
+async function sendTransactionEmail(userEmail,name,amount,account,type){
+    const subject = `Transaction ${type === "DEBIT" ? "Debit" : "Credit"} Notification`;
+    const text = `Hi ${name},\n\nYour account has been ${type === "DEBIT" ? "debited" : "credited"} with an amount of ${amount} ${account.currency}. If you have any questions, please contact our support team.\n\nBest regards,\nThe SniPay Team`;
+    const html = `<p>Hi ${name},</p><p>Your account has been ${type === "DEBIT" ? "debited" : "credited"} with an amount of ${amount} ${account.currency}. If you have any questions, please contact our support team.</p><p>Best regards,<br>The SniPay Team</p>`;
+    sendEmail(userEmail,subject,text,html);
+}
+
 module.exports = {
-    sendRegistrationEmail
+    sendRegistrationEmail,
+    sendTransactionEmail
 }

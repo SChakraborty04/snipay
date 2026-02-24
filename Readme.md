@@ -24,5 +24,6 @@
 - - [x] transaction implementation
 - - [x] Ledger implementation 
 - - [x] Idempotency implementation
-- [] Transaction API
-- [] Balance API
+- [x] Transaction API
+- [x] Balance API
+- [ ] Logout (Token blacklist)

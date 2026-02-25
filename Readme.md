@@ -26,4 +26,5 @@
 - - [x] Idempotency implementation
 - [x] Transaction API
 - [x] Balance API
-- [ ] Logout (Token blacklist)
+- [x] Logout (Token blacklist)
+- [ ] Wallet services

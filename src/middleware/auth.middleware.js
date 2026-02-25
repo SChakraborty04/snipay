@@ -1,5 +1,6 @@
 const userModel = require('../models/user.model');
 const jwt = require('jsonwebtoken');
+const tokenBlacklistModel = require('../models/blackList.model');
 
 
 async function authMiddleware(req, res, next){
@@ -7,6 +8,10 @@ async function authMiddleware(req, res, next){
         const token = req.cookies.token || req.header.authorization?.split(" ")[1];
         if (!token) {
             return res.status(401).json({ message: "Access denied. No token provided." });
+        }
+        const isBlacklisted = await tokenBlacklistModel.findOne({token});
+        if(isBlacklisted){
+            return res.status(401).json({ message: "Invalid token. Token is blacklisted." });
         }
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await userModel.findById(decoded.userId);
@@ -24,6 +29,10 @@ async function authSystemUserMiddleware(req, res, next){
     const token = req.cookies.token || req.header.authorization?.split(" ")[1];
     if (!token) {
         return res.status(401).json({ message: "Access denied. No token provided." });
+    }
+    const isBlacklisted = await tokenBlacklistModel.findOne({token});
+    if(isBlacklisted){
+        return res.status(401).json({ message: "Invalid token. Token is blacklisted." });
     }
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);

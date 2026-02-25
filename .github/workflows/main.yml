@@ -1,0 +1,29 @@
+name: Deploy to CapRover
+
+on:
+  push:
+    branches:
+      - main # Or your desired branch name
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build and package the Node.js app
+        run: |
+          npm install
+          # If you have a build step (e.g., for a frontend part), add it here
+          tar -cf deploy.tar .
+
+      - name: Deploy to CapRover
+        uses: caprover/deploy-from-github@v1.1.2
+        with:
+          server: "${{ secrets.CAPROVER_SERVER }}"
+          app: "${{ secrets.APP_NAME }}"
+          token: "${{ secrets.APP_TOKEN }}"
+          # The action automatically uses the deploy.tar file if 'image' is not specified

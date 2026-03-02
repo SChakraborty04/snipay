@@ -2,9 +2,10 @@
 
 # Flow of development
 - Implement Backend ✅
-- Complete bank ledger backend ⏱️
+- Complete bank ledger backend ✅
+- Create the frontend ⏱️ 
 - Complete payment application
-- Create the frontend 
+
 
 ## Tasks assigned
 - [x] init backend
@@ -28,6 +29,8 @@
 - [x] Balance API
 - [x] Logout (Token blacklist)
 - [x] Get all transactions of account(without reward)
-- [ ] Create reward system
-- [ ] Get all transactions of account (with reward)
-- [ ] Implement queue system (BullMQ) for retries, email and rewards.
+- [x] Create reward system
+- [x] Get all transactions of account (with reward)
+- [❌] Implement queue system (BullMQ) for retries, email and rewards.(Rejected as not required for simple banking application implemented if req in future)
+- [x] All core backend imp0lemented
+- [ ] Creating the frontend

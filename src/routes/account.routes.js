@@ -1,6 +1,6 @@
 const express = require('express');
 const authMiddleware = require('../middleware/auth.middleware');
-const { createAccountController, getAccountsController, getAccountBalanceController } = require('../controllers/account.controller');
+const { createAccountController, getAccountsController, getAccountBalanceController,getAccountRewardsPointsController } = require('../controllers/account.controller');
 
 const router = express.Router();
 
@@ -25,6 +25,13 @@ router.get("/",authMiddleware.authMiddleware,getAccountsController)
  * - Protected Route
  */
 router.get("/balance/:accountId",authMiddleware.authMiddleware,getAccountBalanceController)
+
+/**
+ * - GET /api/accounts/rewards/:accountId
+ * - Get reward points of a specific account
+ * - Protected Route
+ */
+router.get("/rewards/:accountId",authMiddleware.authMiddleware,getAccountRewardsPointsController)
 
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const rewardModel = require('./rewards.model');
 
 const userSchema = new mongoose.Schema({
     email:{
@@ -9,13 +10,6 @@ const userSchema = new mongoose.Schema({
         unique: [true, "Email already exists"],
         lowercase: true,
         match: [/\S+@\S+\.\S+/, 'Please use a valid email address.']
-    },
-    phone:{
-        type:String,
-        required: [true, "Phone number is required for creating a user"],
-        trim: true,
-        unique: [true, "Phone number already exists"],
-        match: [/^\d{10}$/, 'Please use a valid 10-digit phone number.']
     },
     name:{
         type:String,
@@ -52,6 +46,19 @@ userSchema.methods.comparePassword = async function(candidatePassword){
     return await bcrypt.compare(candidatePassword, this.password);
 }
 
+userSchema.methods.getRewardPoints = async function(){
+    const rewardData = await rewardModel.aggregate([
+        {$match: {userId: this._id}},
+        {$group: {
+            _id: null,
+            totalPoints: {$sum: "$points"}
+        }}
+    ])
+    if(rewardData.length === 0){
+        return 0;
+    }
+    return rewardData[0].totalPoints;
+}
 
 const userModel = mongoose.model("User", userSchema);
 

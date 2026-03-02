@@ -10,13 +10,8 @@ const tokenBlacklistModel = require('../models/blackList.model');
  */
 
 async function userRegisterController(req,res){
-    const {email,phone,password,name} = req.body;
-    const isExists = await userModel.findOne({
-        $or:[
-            {email},
-            {phone}
-        ]
-    });
+    const {email,password,name} = req.body;
+    const isExists = await userModel.exists({$or: [{email}]});
     if(isExists){
         return res.status(422).json({
             success: false,
@@ -42,6 +37,7 @@ async function userRegisterController(req,res){
         token
     });
     emailService.sendRegistrationEmail(user.email,user.name);
+    
 }
 /**
  * - user login controller

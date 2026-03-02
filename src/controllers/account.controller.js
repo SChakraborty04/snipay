@@ -55,8 +55,29 @@ async function getAccountBalanceController(req,res){
     });
 }
 
+async function getAccountRewardsPointsController(req,res){
+    const {accountId} = req.params;
+    const account = await accountModel.findOne({
+        _id: accountId,
+        user: req.user._id
+    })
+    if(!account){
+        return res.status(404).json({
+            success: false,
+            message: "Account not found"
+        });
+    }
+    const rewardPoints = await account.getRewardPoints();
+    res.status(200).json({
+        success: true,
+        accountId: account._id,
+        rewardPoints
+    });
+}
+
 module.exports = {
     createAccountController,
     getAccountsController,
-    getAccountBalanceController
+    getAccountBalanceController,
+    getAccountRewardsPointsController
 }

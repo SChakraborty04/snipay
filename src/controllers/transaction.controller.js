@@ -3,6 +3,7 @@ const ledgerModel = require("../models/ledger.model");
 const accountModel = require("../models/account.model");
 const emailService = require("../services/v2.email.service");
 const { default: mongoose } = require("mongoose");
+const rewardModel = require("../models/rewards.model");
 
 /**
  * Complete transation Business Logic
@@ -14,6 +15,7 @@ const { default: mongoose } = require("mongoose");
  * 6. Create Debit ledger entry
  * 7. Create credit ledger entry
  * 8. Mark transaction as COMPLETED
+ * -add rewrds to the sender
  * 9. Commit MongoDB session
  * 10. Send email notification to sender and receiver
  */
@@ -110,8 +112,10 @@ async function createTransaction(req,res){
     }
     // Step 5: Create transaction (PENDING)
     let transaction;
+    let reward;
+    let session;
     try{
-    const session = await mongoose.startSession();
+    session = await mongoose.startSession();
     session.startTransaction();
 
     transaction = (await transactionModel.create([{
@@ -142,7 +146,14 @@ async function createTransaction(req,res){
         {status: "COMPLETED"},
         {session}
     )
-
+    reward = amount
+    console.log(reward)
+    const rewardEntry = await rewardModel.create([{
+        account: fromAccount,
+        transactionId: transaction._id,
+        userId: fromUserAccount.user._id,
+        points: reward,
+    }],{session});
     await session.commitTransaction();
     session.endSession();
     }catch(e){
@@ -161,7 +172,7 @@ async function createTransaction(req,res){
     console.log("From User Account:", fromUserAccount.user.email);
     console.log("To User Account:", toUserAccount.user.email);
     // Step 10: Send email notification to sender and receiver
-    await emailService.sendTransactionEmail(fromUserAccount.user.email,fromUserAccount.user.name,amount,fromUserAccount,"DEBIT");
+    await emailService.sendTransactionEmail(fromUserAccount.user.email,fromUserAccount.user.name,amount,fromUserAccount,"DEBIT",reward);
     await emailService.sendTransactionEmail(toUserAccount.user.email,toUserAccount.user.name,amount,toUserAccount,"CREDIT");
     
     return res.status(201).json({
@@ -238,10 +249,28 @@ async function getTransactionsByAccountId(req,res){
     const transactionSent = await transactionModel.find({fromAccount: accountId}).populate({path: 'toAccount', populate: {path: 'user'}}).lean();
     const transactionReceived = await transactionModel.find({toAccount: accountId}).populate({path: 'fromAccount', populate: {path: 'user'}}).lean();
     
+    // Fetch reward points for sent transactions only (rewards are for senders)
+    const sentTransactionIds = transactionSent.map(t => t._id);
+    const rewards = await rewardModel
+        .find({ transactionId: { $in: sentTransactionIds } })
+        .lean();
+
+    // Map rewards to their transactionId for quick lookup
+    const rewardMap = rewards.reduce((acc, reward) => {
+        acc[reward.transactionId.toString()] = reward.points;
+        return acc;
+    }, {});
+
+    // Attach reward points to each sent transaction
+    const transactionSentWithRewards = transactionSent.map(t => ({
+        ...t,
+        rewardPoints: rewardMap[t._id.toString()] || 0,
+    }));
+
     return res.status(200).json({
         success: true,
-        transactionSent,
-        transactionReceived
+        transactionSent: transactionSentWithRewards,
+        transactionReceived,
     });
 }
 

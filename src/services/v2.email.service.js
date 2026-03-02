@@ -25,11 +25,18 @@ async function sendRegistrationEmail(userEmail,name){
     sendEmail(userEmail,subject,text,html);
 }
 
-async function sendTransactionEmail(userEmail,name,amount,account,type){
-    const subject = `Transaction ${type === "DEBIT" ? "Debit" : "Credit"} Notification`;
-    const text = `Hi ${name},\n\nYour account has been ${type === "DEBIT" ? "debited" : "credited"} with an amount of ${amount} ${account.currency}. If you have any questions, please contact our support team.\n\nBest regards,\nThe SniPay Team`;
-    const html = `<p>Hi ${name},</p><p>Your account has been ${type === "DEBIT" ? "debited" : "credited"} with an amount of ${amount} ${account.currency}. If you have any questions, please contact our support team.</p><p>Best regards,<br>The SniPay Team</p>`;
-    sendEmail(userEmail,subject,text,html);
+async function sendTransactionEmail(userEmail,name,amount,account,type,reward=0){
+    const subject = type === "DEBIT" 
+        ? `Transaction Debit Notification - Rewards Earned!`
+        : `Transaction Credit Notification`;
+    
+    let rewardText = reward > 0 ? `\n\nBonus: You've earned ${reward} reward points for this transaction!` : '';
+    let rewardHtml = reward > 0 ? `<p><strong>Bonus:</strong> You've earned <strong>${reward} reward points</strong> for this transaction!</p>` : '';
+    
+    const text = `Hi ${name},\n\nYour account has been ${type === "DEBIT" ? "debited" : "credited"} with an amount of ${amount} ${account.currency}.${rewardText} If you have any questions, please contact our support team.\n\nBest regards,\nThe SniPay Team`;
+    const html = `<p>Hi ${name},</p><p>Your account has been ${type === "DEBIT" ? "debited" : "credited"} with an amount of <strong>${amount} ${account.currency}</strong>.</p>${rewardHtml}<p>If you have any questions, please contact our support team.</p><p>Best regards,<br>The SniPay Team</p>`;
+    
+    sendEmail(userEmail, subject, text, html);
 }
 
 module.exports = {

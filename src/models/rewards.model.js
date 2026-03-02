@@ -7,16 +7,23 @@ const rewardSchema = new mongoose.Schema({
         required: [true,"Reward must be associated with an account"],
         index: true,
     },
+    userId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true,"Reward must be associated with a user"],
+        index: true,
+    },
     transactionId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Transaction',
         required: [true,"Reward must be associated with a transaction"],
         index: true,
+        unique: true, // Ensure one reward per transaction
     },
     points: {
         type: Number,
         required: [true, "Reward points are required"],
-        min: [0, "Reward points cannot be negative"],
+        min: [0, "Reward points cannot be negative"]
     }
 },{
     timestamps: true,

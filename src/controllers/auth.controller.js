@@ -10,12 +10,17 @@ const tokenBlacklistModel = require('../models/blackList.model');
  */
 
 async function userRegisterController(req,res){
-    const {email,password,name} = req.body;
-    const isExists = await userModel.findOne({email});
+    const {email,phone,password,name} = req.body;
+    const isExists = await userModel.findOne({
+        $or:[
+            {email},
+            {phone}
+        ]
+    });
     if(isExists){
         return res.status(422).json({
             success: false,
-            message: "Email already exists"
+            message: "User already exists with same phone or email."
         });
     }
     const user = await userModel.create({

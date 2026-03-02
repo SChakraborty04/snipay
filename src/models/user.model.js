@@ -10,6 +10,13 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         match: [/\S+@\S+\.\S+/, 'Please use a valid email address.']
     },
+    phone:{
+        type:String,
+        required: [true, "Phone number is required for creating a user"],
+        trim: true,
+        unique: [true, "Phone number already exists"],
+        match: [/^\d{10}$/, 'Please use a valid 10-digit phone number.']
+    },
     name:{
         type:String,
         required: [true, "Name is required for creating a user"],

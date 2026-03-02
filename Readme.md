@@ -27,4 +27,7 @@
 - [x] Transaction API
 - [x] Balance API
 - [x] Logout (Token blacklist)
-- [ ] Wallet services
+- [x] Get all transactions of account(without reward)
+- [ ] Create reward system
+- [ ] Get all transactions of account (with reward)
+- [ ] Implement queue system (BullMQ) for retries, email and rewards.

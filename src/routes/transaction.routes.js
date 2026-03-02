@@ -18,4 +18,12 @@ router.post("/",authMiddleware,transactionController.createTransaction);
  */
 router.post("/system/initial-funds",authSystemUserMiddleware,transactionController.createInitialFundsTransaction);
 
+/**
+ * - GET /api/transactions/:accountId
+ * - Get all transactions of a specific account
+ * - Protected Route
+ */
+router.get("/:accountId",authMiddleware,transactionController.getTransactionsByAccountId);
+
+
 module.exports = router;

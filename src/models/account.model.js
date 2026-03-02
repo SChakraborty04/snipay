@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const ledgerModel = require('./ledger.model');
+const rewardModel = require('./rewards.model');
 
 const accountSchema = new mongoose.Schema({
     user: {
@@ -63,6 +64,20 @@ accountSchema.methods.getBalance = async function(){
         return 0;
     }
     return balanceData[0].balance;
+}
+
+accountSchema.methods.getRewardPoints = async function(){
+    const rewardData = await rewardModel.aggregate([
+        {$match: {account: this._id}},
+        {$group: {
+            _id: null,
+            totalPoints: {$sum: "$points"}
+        }}
+    ])
+    if(rewardData.length === 0){
+        return 0;
+    }
+    return rewardData[0].totalPoints;
 }
 
 const accountModel = mongoose.model("Account", accountSchema);

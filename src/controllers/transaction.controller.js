@@ -146,9 +146,14 @@ async function createTransaction(req,res){
     await session.commitTransaction();
     session.endSession();
     }catch(e){
-        return res.status(400).json({
+        if (session) {
+            await session.abortTransaction();
+            session.endSession();
+        }
+        
+        return res.status(500).json({
             success: false,
-            message: "Transaction is pending due to some issue, please retry after some time",
+            message: "Transaction failed. Please try again.",
             error: e.message
         });
     }
@@ -228,7 +233,20 @@ async function createInitialFundsTransaction(req,res){
     });
 }
 
+async function getTransactionsByAccountId(req,res){
+    const {accountId} = req.params;
+    const transactionSent = await transactionModel.find({fromAccount: accountId}).populate({path: 'toAccount', populate: {path: 'user'}}).lean();
+    const transactionReceived = await transactionModel.find({toAccount: accountId}).populate({path: 'fromAccount', populate: {path: 'user'}}).lean();
+    
+    return res.status(200).json({
+        success: true,
+        transactionSent,
+        transactionReceived
+    });
+}
+
 module.exports = {
     createTransaction,
-    createInitialFundsTransaction
+    createInitialFundsTransaction,
+    getTransactionsByAccountId
 }
